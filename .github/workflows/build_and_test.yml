@@ -25,7 +25,9 @@ jobs:
                   key:  ${{ runner.os }}-nimble-${{ hashFiles('*.nimble') }}
               if: runner.os != 'Windows'
             - uses: jiro4989/setup-nim-action@v1.1.3
-            - name: Build
-              run:  nimble build -Y
-            - name: Test
+            - name: Build test-plugin
+              run:  nim c plg_src/uwms_plugin_nim.nim
+              # - name: Build
+              #   run:  nimble build -Y
+            - name: Test test-plugin
               run:  nimble test -Y
