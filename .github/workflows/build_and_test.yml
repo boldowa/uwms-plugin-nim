@@ -1,0 +1,31 @@
+name: Build and test Nim
+
+on: [push, pull_request]
+
+
+jobs:
+    build:
+        strategy:
+            matrix:
+                os: [ubuntu-latest, windows-latest, macos-latest]
+        runs-on: ${{ matrix.os }}
+        steps:
+            - uses: actions/checkout@v2
+            - name: Cache choosenim
+              id:   cache-choosenim
+              uses: actions/cache@v1
+              with:
+                  path: ~/.choosenim
+                  key:  ${{ runner.os }}-choosenim-${{ steps.get-date.outputs.date }}
+            - name: Cache nimble
+              id:   cache-nimble
+              uses: actions/cache@v1
+              with:
+                  path: ~/.nimble
+                  key:  ${{ runner.os }}-nimble-${{ hashFiles('*.nimble') }}
+              if: runner.os != 'Windows'
+            - uses: jiro4989/setup-nim-action@v1.1.3
+            - name: Build
+              run:  nimble build -Y
+            - name: Test
+              run:  nimble test -Y
