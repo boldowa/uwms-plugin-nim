@@ -17,7 +17,7 @@ type
     ProcUwmsGetPluginId*            = proc():cstring {.gcsafe, stdcall.}
     ProcUwmsGetPluginName*          = proc():cstring {.gcsafe, stdcall.}
     ProcUwmsGetPluginGroupId*       = proc():cstring {.gcsafe, stdcall.}
-    ProcUwmsGetPluginDepends*       = proc():seq[DependsReturn] {.gcsafe, stdcall.}
+    ProcUwmsGetPluginDepends*       = proc():ptr UncheckedArray[DependsReturn] {.gcsafe, stdcall.}
     ProcUwmsGetPluginControlInfo*   = proc():ptr ControlInfo {.gcsafe, stdcall.}
     ProcUwmsPluginInitialize*       = proc(p:pointer, v:cint):cint {.gcsafe, stdcall.}  # pointer = ptr[UwmsPlugin]
     ProcUwmsPluginExporter*         = proc() {.gcsafe, stdcall.}
@@ -44,10 +44,12 @@ proc uwmsGetPluginName*():cstring {.dynlib, exportc, stdcall.} =
 proc uwmsGetPluginGroupId*():cstring {.dynlib, exportc, stdcall.} =
   return "test-gid"
 
-proc uwmsGetPluginDepends*():seq[DependsReturn] {.dynlib, exportc, stdcall.} =
-  var deps : seq[DependsReturn] = @[]
-  deps.add(DependsReturn(id: nil, vermin: -1, vermax: -1))
-  return deps
+proc uwmsGetPluginDepends*():ptr UncheckedArray[DependsReturn] {.dynlib, exportc, stdcall.} =
+  let deps {.global.} : array[2, DependsReturn] = [
+    DependsReturn(id: "test-dep", vermin: 1, vermax: 3),
+    DependsReturn(id: nil, vermin: -1, vermax: -1)
+  ]
+  return cast[ptr UncheckedArray[DependsReturn]](deps.unsafeAddr)
 
 proc uwmsGetPluginControlInfo*():ptr ControlInfo {.dynlib, exportc, stdcall.} =
   return nil

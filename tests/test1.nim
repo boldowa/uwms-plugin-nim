@@ -58,9 +58,13 @@ test "plugin dep info function check":
 
   var getdep = cast[ProcUwmsGetPluginDepends](lib.symAddr("uwmsGetPluginDepends"))
   check getdep != nil
-  var v : seq[DependsReturn]
+  var v : ptr UncheckedArray[DependsReturn]
   v = getdep()
   var x = v[0]
+  check x.id == "test-dep"
+  check x.vermin == 1
+  check x.vermax == 3
+  x = v[1]
   check x.id == nil
   check x.vermin == -1
   check x.vermax == -1
