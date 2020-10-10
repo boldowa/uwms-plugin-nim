@@ -2,7 +2,7 @@
 import dynlib
 import unittest
 
-import uwms_plugin_nim
+import plg_uwms_plugin
 
 when defined windows:
     const plugin_ext = ".dll"
@@ -11,7 +11,7 @@ elif defined macosx:
 else: # linux, unix
     const plugin_ext = ".so"
 
-const libpath = "bin/plg_uwms_plugin_nim" & plugin_ext
+const libpath = "bin/plg_uwms_plugin" & plugin_ext
 
 test "plugin load and unload check":
   var lib = loadlib(libpath)
